@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Meu AI - Boneco</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #20242b;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: background .3s;
+}
+
+
+/* =========================
+   TOPO
+========================= */
+
+.topo {
+    width: 100%;
+    height: 55px;
+    min-height: 55px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 12px;
+
+    background: #11151a;
+    border-bottom: 1px solid #3a4048;
+}
+
+.titulo {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.topo button {
+    border: none;
+    background: #2c323a;
+    color: white;
+    border-radius: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.topo button:hover {
+    background: #3b424c;
+}
+
+
+/* =========================
+   ÁREA DO BONECO
+========================= */
+
+.area-boneco {
+    flex: 1;
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+}
+
+
+/* =========================
+   BONECO
+========================= */
+
+.boneco {
+    width: 250px;
+    text-align: center;
+
+    transition: .3s;
+
+    transform-origin: center bottom;
+}
+
+
+/* =========================
+   CABEÇA
+========================= */
+
+.cabeca {
+    width: 220px;
+    height: 220px;
+
+    margin: auto;
+
+    background: #60a5fa;
+
+    border: 7px solid #111827;
+
+    border-radius: 50%;
+
+    position: relative;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,.35);
+
+    transition:
+        background .3s,
+        border-radius .3s,
+        width .3s,
+        height .3s;
+}
+
+
+/* =========================
+   ANTENA
+========================= */
+
+.antena {
+    width: 8px;
+    height: 35px;
+
+    background: #111827;
+
+    position: absolute;
+
+    top: -35px;
+    left: 50%;
+
+    transform: translateX(-50%);
+}
+
+.luz {
+    width: 18px;
+    height: 18px;
+
+    border-radius: 50%;
+
+    background: #22c55e;
+
+    border: 3px solid #111827;
+
+    position: absolute;
+
+    top: -48px;
+    left: 50%;
+
+    transform: translateX(-50%);
+}
+
+
+/* =========================
+   OLHOS
+========================= */
+
+.olho {
+    width: 48px;
+    height: 58px;
+
+    background: white;
+
+    border: 4px solid #111827;
+
+    border-radius: 50%;
+
+    position: absolute;
+
+    top: 55px;
+
+    overflow: hidden;
+
+    transition:
+        width .3s,
+        height .3s,
+        border-radius .3s;
+}
+
+.olho.esquerdo {
+    left: 42px;
+}
+
+.olho.direito {
+    right: 42px;
+}
+
+.pupila {
+    width: 20px;
+    height: 25px;
+
+    background: #111827;
+
+    border-radius: 50%;
+
+    position: absolute;
+
+    top: 14px;
+    left: 10px;
+
+    transition: .15s;
+}
+
+
+/* =========================
+   BOCA
+========================= */
+
+.boca {
+    width: 85px;
+    height: 18px;
+
+    background: #111827;
+
+    border-radius: 8px 8px 20px 20px;
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 43px;
+
+    transform: translateX(-50%);
+
+    transition:
+        background .2s,
+        height .08s;
+}
+
+.lingua {
+    display: none;
+
+    width: 35px;
+    height: 12px;
+
+    background: #ef4444;
+
+    border-radius: 20px 20px 5px 5px;
+
+    position: absolute;
+
+    bottom: 0;
+    left: 50%;
+
+    transform: translateX(-50%);
+}
+
+
+/* =========================
+   CORPO
+========================= */
+
+.corpo {
+    width: 150px;
+    height: 100px;
+
+    background: #374151;
+
+    border: 6px solid #111827;
+
+    border-radius: 30px;
+
+    margin: 12px auto 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: bold;
+
+    transition: .3s;
+}
+
+
+/* =========================
+   ESTADO
+========================= */
+
+.estado {
+    margin-top: 10px;
+
+    font-size: 13px;
+
+    color: #9ca3af;
+}
+
+
+/* =========================
+   BOTÕES
+========================= */
+
+.botoes {
+    width: 100%;
+
+    padding: 12px;
+
+    display: flex;
+
+    gap: 8px;
+
+    justify-content: center;
+
+    background: #11151a;
+
+    border-top: 1px solid #3a4048;
+}
+
+.botoes button {
+    border: none;
+
+    background: #2c323a;
+
+    color: white;
+
+    padding: 9px 12px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+.botoes button:hover {
+    background: #3b424c;
+}
+
+
+/* =========================
+   PAINEL
+========================= */
+
+.personalizar {
+
+    display: none;
+
+    position: absolute;
+
+    top: 65px;
+    right: 10px;
+
+    width: 240px;
+
+    max-height: calc(100vh - 75px);
+
+    overflow-y: auto;
+
+    background: #11151a;
+
+    border: 1px solid #3a4048;
+
+    border-radius: 12px;
+
+    padding: 15px;
+
+    z-index: 10;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,.5);
+}
+
+.personalizar.aberto {
+    display: block;
+}
+
+.personalizar h3 {
+    margin-top: 0;
+
+    font-size: 16px;
+}
+
+.opcao {
+    margin: 12px 0;
+}
+
+.opcao label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-size: 13px;
+
+    color: #d1d5db;
+}
+
+.opcao select,
+.opcao input {
+    width: 100%;
+
+    padding: 8px;
+
+    border-radius: 7px;
+
+    border: 1px solid #4b5563;
+
+    background: #1f2937;
+
+    color: white;
+}
+
+.separador {
+    height: 1px;
+
+    background: #374151;
+
+    margin: 15px 0;
+}
+
+
+/* =========================
+   BOCA A FALAR
+========================= */
+
+.falando .boca {
+    animation: bocaFalando .12s infinite alternate;
+}
+
+@keyframes bocaFalando {
+
+    from {
+        height: 10px;
+    }
+
+    to {
+        height: 42px;
+    }
+
+}
+
+
+/* =========================
+   CABEÇA A FALAR
+========================= */
+
+.falando .cabeca {
+    animation: cabecaFalando .7s infinite alternate ease-in-out;
+}
+
+@keyframes cabecaFalando {
+
+    from {
+        transform: rotate(-1deg);
+    }
+
+    to {
+        transform: rotate(1deg);
+    }
+
+}
+
+
+/* =========================
+   CORPO A FALAR
+========================= */
+
+.falando .corpo {
+    animation: corpoFalando .45s infinite alternate ease-in-out;
+}
+
+@keyframes corpoFalando {
+
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-4px);
+    }
+
+}
+
+
+/* =========================
+   BONECO A FALAR
+========================= */
+
+.falando {
+    animation: bonecoFalando 1.2s infinite alternate ease-in-out;
+}
+
+@keyframes bonecoFalando {
+
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-3px);
+    }
+
+}
+
+
+/* =========================
+   PISCAR
+========================= */
+
+.piscando .olho {
+    height: 8px;
+    top: 80px;
+}
+
+
+/* =========================
+   PISCAR AUTOMÁTICO
+========================= */
+
+.piscando-auto .olho {
+    animation: piscarAuto .12s linear;
+}
+
+@keyframes piscarAuto {
+
+    0% {
+        height: 58px;
+    }
+
+    50% {
+        height: 6px;
+    }
+
+    100% {
+        height: 58px;
+    }
+
+}
+
+
+/* =========================
+   FORMATOS
+========================= */
+
+.formato-redondo .cabeca {
+    border-radius: 50%;
+}
+
+.formato-quadrado .cabeca {
+    border-radius: 25px;
+}
+
+.formato-arredondado .cabeca {
+    border-radius: 35px;
+}
+
+
+/* =========================
+   TRANSPARÊNCIA
+========================= */
+
+body.transparente {
+    background: rgba(32,36,43,.65);
+}
+
+
+/* =========================
+   MODO SÓ BONECO
+========================= */
+
+body.sem-interface .topo,
+body.sem-interface .botoes {
+    display: none;
+}
+
+body.sem-interface .area-boneco {
+    height: 100vh;
+}
+
+
+/* =========================
+   MOVIMENTO DOS OLHOS
+========================= */
+
+.olhos-movimento .pupila {
+    animation: olhosMovimento 3s infinite ease-in-out;
+}
+
+@keyframes olhosMovimento {
+
+    0% {
+        transform: translate(0,0);
+    }
+
+    20% {
+        transform: translate(5px,0);
+    }
+
+    40% {
+        transform: translate(-4px,1px);
+    }
+
+    60% {
+        transform: translate(3px,-2px);
+    }
+
+    80% {
+        transform: translate(-2px,1px);
+    }
+
+    100% {
+        transform: translate(0,0);
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     TOPO
+========================= -->
+
+<div class="topo">
+
+    <div class="titulo">
+        🧍 Meu AI
+    </div>
+
+    <button
+        type="button"
+        onclick="abrirPersonalizacao()"
+    >
+        🎨 Personalizar
+    </button>
+
+</div>
+
+
+<!-- =========================
+     BONECO
+========================= -->
+
+<div class="area-boneco">
+
+    <div
+        class="boneco olhos-movimento formato-redondo"
+        id="boneco"
+    >
+
+        <div class="cabeca">
+
+            <div class="antena"></div>
+
+            <div class="luz"></div>
+
+
+            <div class="olho esquerdo">
+
+                <div class="pupila"></div>
+
+            </div>
+
+
+            <div class="olho direito">
+
+                <div class="pupila"></div>
+
+            </div>
+
+
+            <div class="boca">
+
+                <div class="lingua"></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="corpo">
+            Meu AI
+        </div>
+
+
+        <div
+            class="estado"
+            id="estado"
+        >
+            🟢 Pronto
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     PAINEL
+========================= -->
+
+<div
+    class="personalizar"
+    id="painel"
+>
+
+    <h3>
+        🎨 Personalizar
+    </h3>
+
+
+    <div class="opcao">
+
+        <label>
+            Cor do boneco
+        </label>
+
+        <input
+            type="color"
+            id="corBoneco"
+            value="#60a5fa"
+            onchange="mudarCor()"
+        >
+
+    </div>
+
+
+    <div class="opcao">
+
+        <label>
+            Formato dos olhos
+        </label>
+
+        <select
+            id="tipoOlhos"
+            onchange="mudarOlhos()"
+        >
+
+            <option value="normal">
+                Normal
+            </option>
+
+            <option value="redondo">
+                Redondos
+            </option>
+
+            <option value="grande">
+                Grandes
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="opcao">
+
+        <label>
+            Cor dos olhos
+        </label>
+
+        <input
+            type="color"
+            id="corOlhos"
+            value="#111827"
+            onchange="mudarCorOlhos()"
+        >
+
+    </div>
+
+
+    <div class="opcao">
+
+        <label>
+            Cor da boca
+        </label>
+
+        <input
+            type="color"
+            id="corBoca"
+            value="#111827"
+            onchange="mudarCorBoca()"
+        >
+
+    </div>
+
+
+    <div class="separador"></div>
+
+
+    <h3>
+        🪟 Janela
+    </h3>
+
+
+    <div class="opcao">
+
+        <label>
+            Formato do boneco
+        </label>
+
+        <select
+            id="formatoBoneco"
+            onchange="mudarFormatoBoneco()"
+        >
+
+            <option value="redondo">
+                🔵 Redondo
+            </option>
+
+            <option value="quadrado">
+                ⬛ Quadrado
+            </option>
+
+            <option value="arredondado">
+                🟦 Arredondado
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="opcao">
+
+        <label>
+            Tamanho do boneco
+        </label>
+
+        <select
+            id="tamanhoBoneco"
+            onchange="mudarTamanhoBoneco()"
+        >
+
+            <option value="pequeno">
+                Pequeno
+            </option>
+
+            <option value="medio" selected>
+                Médio
+            </option>
+
+            <option value="grande">
+                Grande
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="opcao">
+
+        <label>
+            Transparência
+        </label>
+
+        <select
+            id="transparencia"
+            onchange="mudarTransparencia()"
+        >
+
+            <option value="normal">
+                ⬛ Normal
+            </option>
+
+            <option value="transparente">
+                🌑 Semitransparente
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="opcao">
+
+        <label>
+            Interface da janela
+        </label>
+
+        <select
+            id="interfaceJanela"
+            onchange="mudarInterface()"
+        >
+
+            <option value="normal">
+                🪟 Completa
+            </option>
+
+            <option value="limpa">
+                ✨ Só boneco
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="opcao">
+
+        <label>
+            Movimento dos olhos
+        </label>
+
+        <select
+            id="movimentoOlhos"
+            onchange="mudarMovimentoOlhos()"
+        >
+
+            <option value="sim">
+                👀 Ativado
+            </option>
+
+            <option value="nao">
+                👀 Desativado
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="opcao">
+
+        <label>
+            Piscadas automáticas
+        </label>
+
+        <select
+            id="piscadas"
+            onchange="mudarPiscadas()"
+        >
+
+            <option value="sim">
+                😉 Ativadas
+            </option>
+
+            <option value="nao">
+                👁️ Desativadas
+            </option>
+
+        </select>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     BOTÕES
+========================= -->
+
+<div class="botoes">
+
+    <button
+        type="button"
+        onclick="testarVoz()"
+    >
+        🔊 Testar voz
+    </button>
+
+
+    <button
+        type="button"
+        onclick="ouvir()"
+    >
+        🎤 Falar
+    </button>
+
+
+    <button
+        type="button"
+        onclick="piscar()"
+    >
+        😉 Piscar
+    </button>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   CONFIGURAÇÕES GUARDADAS
+===================================================== */
+
+const CONFIG_KEY = "meuAI_boneco_config";
+
+const configuracaoPadrao = {
+
+    corBoneco: "#60a5fa",
+
+    tipoOlhos: "normal",
+
+    corOlhos: "#111827",
+
+    corBoca: "#111827",
+
+    formatoBoneco: "redondo",
+
+    tamanhoBoneco: "medio",
+
+    transparencia: "normal",
+
+    interfaceJanela: "normal",
+
+    movimentoOlhos: "sim",
+
+    piscadas: "sim"
+
+};
+
+
+let configuracao = carregarConfiguracao();
+
+
+function carregarConfiguracao() {
+
+    try {
+
+        const guardada =
+            localStorage.getItem(CONFIG_KEY);
+
+
+        if (!guardada) {
+
+            return {
+                ...configuracaoPadrao
+            };
+
+        }
+
+
+        return {
+            ...configuracaoPadrao,
+            ...JSON.parse(guardada)
+        };
+
+    }
+
+    catch (erro) {
+
+        console.log(
+            "Não foi possível carregar as configurações.",
+            erro
+        );
+
+        return {
+            ...configuracaoPadrao
+        };
+
+    }
+
+}
+
+
+function guardarConfiguracao() {
+
+    localStorage.setItem(
+        CONFIG_KEY,
+        JSON.stringify(configuracao)
+    );
+
+}
+
+
+/* =====================================================
+   VOZ
+===================================================== */
+
+function falar(texto) {
+
+    if (!("speechSynthesis" in window)) {
+        return;
+    }
+
+
+    window.speechSynthesis.cancel();
+
+
+    const voz =
+        new SpeechSynthesisUtterance(texto);
+
+
+    voz.lang = "pt-PT";
+
+    voz.rate = 1;
+
+    voz.pitch = 1;
+
+    voz.volume = 1;
+
+
+    voz.onstart = function() {
+
+        iniciarBoca();
+
+        document.getElementById("estado").textContent =
+            "🗣️ A falar...";
+
+    };
+
+
+    voz.onend = function() {
+
+        pararBoca();
+
+        document.getElementById("estado").textContent =
+            "🟢 Pronto";
+
+    };
+
+
+    window.speechSynthesis.speak(voz);
+
+}
+
+
+/* =====================================================
+   TESTAR VOZ
+===================================================== */
+
+function testarVoz() {
+
+    falar(
+        "Olá! Eu sou o Meu AI. As minhas configurações ficam guardadas mesmo quando fechas o boneco."
+    );
+
+}
+
+
+/* =====================================================
+   BOCA E ANIMAÇÕES
+===================================================== */
+
+function iniciarBoca() {
+
+    document
+        .getElementById("boneco")
+        .classList.add("falando");
+
+
+    document
+        .querySelector(".luz")
+        .style.background = "#facc15";
+
+}
+
+
+function pararBoca() {
+
+    document
+        .getElementById("boneco")
+        .classList.remove("falando");
+
+
+    document
+        .querySelector(".luz")
+        .style.background = "#22c55e";
+
+}
+
+
+/* =====================================================
+   MICROFONE
+===================================================== */
+
+function ouvir() {
+
+    const Reconhecimento =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+    if (!Reconhecimento) {
+
+        alert(
+            "O teu navegador não suporta reconhecimento de voz."
+        );
+
+        return;
+
+    }
+
+
+    const reconhecimento =
+        new Reconhecimento();
+
+
+    reconhecimento.lang = "pt-PT";
+
+    reconhecimento.interimResults = false;
+
+
+    document.getElementById("estado").textContent =
+        "🎤 A ouvir...";
+
+
+    reconhecimento.start();
+
+
+    reconhecimento.onresult =
+        function(event) {
+
+            const texto =
+                event.results[0][0].transcript;
+
+
+            document.getElementById("estado").textContent =
+                "📨 A enviar...";
+
+
+            if (window.opener) {
+
+                window.opener.postMessage(
+                    {
+                        tipo: "mensagemDoBoneco",
+                        texto: texto
+                    },
+                    "*"
+                );
+
+            }
+
+        };
+
+
+    reconhecimento.onerror =
+        function() {
+
+            document.getElementById("estado").textContent =
+                "❌ Erro no microfone";
+
+        };
+
+}
+
+
+/* =====================================================
+   RECEBER RESPOSTA DO MEU AI
+===================================================== */
+
+window.addEventListener(
+    "message",
+    function(event) {
+
+        if (!event.data) {
+            return;
+        }
+
+
+        if (
+            event.data.tipo ===
+            "respostaDoMeuAI"
+        ) {
+
+            falar(
+                event.data.texto
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   PAINEL
+===================================================== */
+
+function abrirPersonalizacao() {
+
+    document
+        .getElementById("painel")
+        .classList.toggle("aberto");
+
+}
+
+
+/* =====================================================
+   COR DO BONECO
+===================================================== */
+
+function mudarCor() {
+
+    const cor =
+        document.getElementById("corBoneco").value;
+
+
+    configuracao.corBoneco = cor;
+
+
+    document
+        .querySelector(".cabeca")
+        .style.background = cor;
+
+
+    guardarConfiguracao();
+
+}
+
+
+/* =====================================================
+   COR DOS OLHOS
+===================================================== */
+
+function mudarCorOlhos() {
+
+    const cor =
+        document.getElementById("corOlhos").value;
+
+
+    configuracao.corOlhos = cor;
+
+
+    document
+        .querySelectorAll(".pupila")
+        .forEach(
+            function(pupila) {
+
+                pupila.style.background = cor;
+
+            }
+        );
+
+
+    guardarConfiguracao();
+
+}
+
+
+/* =====================================================
+   COR DA BOCA
+===================================================== */
+
+function mudarCorBoca() {
+
+    const cor =
+        document.getElementById("corBoca").value;
+
+
+    configuracao.corBoca = cor;
+
+
+    document
+        .querySelector(".boca")
+        .style.background = cor;
+
+
+    guardarConfiguracao();
+
+}
+
+
+/* =====================================================
+   FORMATO DOS OLHOS
+===================================================== */
+
+function mudarOlhos() {
+
+    const tipo =
+        document.getElementById("tipoOlhos").value;
+
+
+    configuracao.tipoOlhos = tipo;
+
+
+    aplicarFormatoOlhos(tipo);
+
+
+    guardarConfiguracao();
+
+}
+
+
+function aplicarFormatoOlhos(tipo) {
+
+    const olhos =
+        document.querySelectorAll(".olho");
+
+
+    if (tipo === "redondo") {
+
+        olhos.forEach(
+            function(olho) {
+
+                olho.style.width = "55px";
+
+                olho.style.height = "55px";
+
+                olho.style.borderRadius = "50%";
+
+            }
+        );
+
+    }
+
+
+    else if (tipo === "grande") {
+
+        olhos.forEach(
+            function(olho) {
+
+                olho.style.width = "58px";
+
+                olho.style.height = "70px";
+
+            }
+        );
+
+    }
+
+
+    else {
+
+        olhos.forEach(
+            function(olho) {
+
+                olho.style.width = "48px";
+
+                olho.style.height = "58px";
+
+                olho.style.borderRadius = "50%";
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   FORMATO DO BONECO
+===================================================== */
+
+function mudarFormatoBoneco() {
+
+    const formato =
+        document.getElementById("formatoBoneco").value;
+
+
+    configuracao.formatoBoneco = formato;
+
+
+    aplicarFormatoBoneco(formato);
+
+
+    guardarConfiguracao();
+
+}
+
+
+function aplicarFormatoBoneco(formato) {
+
+    const boneco =
+        document.getElementById("boneco");
+
+
+    boneco.classList.remove(
+        "formato-redondo",
+        "formato-quadrado",
+        "formato-arredondado"
+    );
+
+
+    boneco.classList.add(
+        "formato-" + formato
+    );
+
+}
+
+
+/* =====================================================
+   TAMANHO
+===================================================== */
+
+function mudarTamanhoBoneco() {
+
+    const tamanho =
+        document.getElementById("tamanhoBoneco").value;
+
+
+    configuracao.tamanhoBoneco = tamanho;
+
+
+    aplicarTamanhoBoneco(tamanho);
+
+
+    guardarConfiguracao();
+
+}
+
+
+function aplicarTamanhoBoneco(tamanho) {
+
+    const cabeca =
+        document.querySelector(".cabeca");
+
+
+    const corpo =
+        document.querySelector(".corpo");
+
+
+    if (tamanho === "pequeno") {
+
+        cabeca.style.width = "170px";
+
+        cabeca.style.height = "170px";
+
+        corpo.style.width = "120px";
+
+        corpo.style.height = "80px";
+
+    }
+
+
+    else if (tamanho === "grande") {
+
+        cabeca.style.width = "280px";
+
+        cabeca.style.height = "280px";
+
+        corpo.style.width = "180px";
+
+        corpo.style.height = "120px";
+
+    }
+
+
+    else {
+
+        cabeca.style.width = "220px";
+
+        cabeca.style.height = "220px";
+
+        corpo.style.width = "150px";
+
+        corpo.style.height = "100px";
+
+    }
+
+}
+
+
+/* =====================================================
+   TRANSPARÊNCIA
+===================================================== */
+
+function mudarTransparencia() {
+
+    const valor =
+        document.getElementById("transparencia").value;
+
+
+    configuracao.transparencia = valor;
+
+
+    aplicarTransparencia(valor);
+
+
+    guardarConfiguracao();
+
+}
+
+
+function aplicarTransparencia(valor) {
+
+    if (valor === "transparente") {
+
+        document.body.classList.add(
+            "transparente"
+        );
+
+    }
+
+    else {
+
+        document.body.classList.remove(
+            "transparente"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   INTERFACE
+===================================================== */
+
+function mudarInterface() {
+
+    const valor =
+        document.getElementById("interfaceJanela").value;
+
+
+    configuracao.interfaceJanela = valor;
+
+
+    aplicarInterface(valor);
+
+
+    guardarConfiguracao();
+
+}
+
+
+function aplicarInterface(valor) {
+
+    if (valor === "limpa") {
+
+        document.body.classList.add(
+            "sem-interface"
+        );
+
+    }
+
+    else {
+
+        document.body.classList.remove(
+            "sem-interface"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   MOVIMENTO DOS OLHOS
+===================================================== */
+
+function mudarMovimentoOlhos() {
+
+    const valor =
+        document.getElementById("movimentoOlhos").value;
+
+
+    configuracao.movimentoOlhos = valor;
+
+
+    aplicarMovimentoOlhos(valor);
+
+
+    guardarConfiguracao();
+
+}
+
+
+function aplicarMovimentoOlhos(valor) {
+
+    const boneco =
+        document.getElementById("boneco");
+
+
+    if (valor === "sim") {
+
+        boneco.classList.add(
+            "olhos-movimento"
+        );
+
+    }
+
+    else {
+
+        boneco.classList.remove(
+            "olhos-movimento"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PISCADAS
+===================================================== */
+
+let piscadasAtivas = true;
+
+let intervaloPiscada = null;
+
+
+function iniciarPiscadas() {
+
+    if (intervaloPiscada) {
+
+        clearInterval(
+            intervaloPiscada
+        );
+
+    }
+
+
+    intervaloPiscada =
+        setInterval(
+            function() {
+
+                if (!piscadasAtivas) {
+                    return;
+                }
+
+
+                piscarAutomaticamente();
+
+            },
+            3500
+        );
+
+}
+
+
+function piscarAutomaticamente() {
+
+    const boneco =
+        document.getElementById("boneco");
+
+
+    boneco.classList.add(
+        "piscando-auto"
+    );
+
+
+    setTimeout(
+        function() {
+
+            boneco.classList.remove(
+                "piscando-auto"
+            );
+
+        },
+        150
+    );
+
+}
+
+
+function mudarPiscadas() {
+
+    const valor =
+        document.getElementById("piscadas").value;
+
+
+    configuracao.piscadas = valor;
+
+
+    if (valor === "sim") {
+
+        piscadasAtivas = true;
+
+        iniciarPiscadas();
+
+    }
+
+    else {
+
+        piscadasAtivas = false;
+
+
+        if (intervaloPiscada) {
+
+            clearInterval(
+                intervaloPiscada
+            );
+
+            intervaloPiscada = null;
+
+        }
+
+    }
+
+
+    guardarConfiguracao();
+
+}
+
+
+/* =====================================================
+   PISCAR MANUAL
+===================================================== */
+
+function piscar() {
+
+    piscarAutomaticamente();
+
+}
+
+
+/* =====================================================
+   APLICAR TODAS AS CONFIGURAÇÕES GUARDADAS
+===================================================== */
+
+function aplicarConfiguracoesGuardadas() {
+
+    document.getElementById("corBoneco").value =
+        configuracao.corBoneco;
+
+
+    document.getElementById("tipoOlhos").value =
+        configuracao.tipoOlhos;
+
+
+    document.getElementById("corOlhos").value =
+        configuracao.corOlhos;
+
+
+    document.getElementById("corBoca").value =
+        configuracao.corBoca;
+
+
+    document.getElementById("formatoBoneco").value =
+        configuracao.formatoBoneco;
+
+
+    document.getElementById("tamanhoBoneco").value =
+        configuracao.tamanhoBoneco;
+
+
+    document.getElementById("transparencia").value =
+        configuracao.transparencia;
+
+
+    document.getElementById("interfaceJanela").value =
+        configuracao.interfaceJanela;
+
+
+    document.getElementById("movimentoOlhos").value =
+        configuracao.movimentoOlhos;
+
+
+    document.getElementById("piscadas").value =
+        configuracao.piscadas;
+
+
+    /* COR */
+
+    document
+        .querySelector(".cabeca")
+        .style.background =
+        configuracao.corBoneco;
+
+
+    /* OLHOS */
+
+    aplicarFormatoOlhos(
+        configuracao.tipoOlhos
+    );
+
+
+    document
+        .querySelectorAll(".pupila")
+        .forEach(
+            function(pupila) {
+
+                pupila.style.background =
+                    configuracao.corOlhos;
+
+            }
+        );
+
+
+    /* BOCA */
+
+    document
+        .querySelector(".boca")
+        .style.background =
+        configuracao.corBoca;
+
+
+    /* FORMATO */
+
+    aplicarFormatoBoneco(
+        configuracao.formatoBoneco
+    );
+
+
+    /* TAMANHO */
+
+    aplicarTamanhoBoneco(
+        configuracao.tamanhoBoneco
+    );
+
+
+    /* TRANSPARÊNCIA */
+
+    aplicarTransparencia(
+        configuracao.transparencia
+    );
+
+
+    /* INTERFACE */
+
+    aplicarInterface(
+        configuracao.interfaceJanela
+    );
+
+
+    /* OLHOS */
+
+    aplicarMovimentoOlhos(
+        configuracao.movimentoOlhos
+    );
+
+
+    /* PISCADAS */
+
+    if (
+        configuracao.piscadas ===
+        "sim"
+    ) {
+
+        piscadasAtivas = true;
+
+        iniciarPiscadas();
+
+    }
+
+    else {
+
+        piscadasAtivas = false;
+
+    }
+
+}
+
+
+/* =====================================================
+   INICIAR
+===================================================== */
+
+aplicarConfiguracoesGuardadas();
+
+</script>
+
+</body>
+</html>
