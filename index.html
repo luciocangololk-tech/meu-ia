@@ -1,266 +1,406 @@
 <!DOCTYPE html>
+
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu AI</title>
-    <link rel="stylesheet" href="style.css">
+
+```
+<!-- 🔎 GOOGLE / SEO -->
+<title>Meu AI — Inteligência Artificial</title>
+
+<meta
+    name="description"
+    content="Meu AI é um assistente de inteligência artificial que conversa contigo, analisa imagens, lê ficheiros e muito mais."
+>
+
+<meta name="robots" content="index, follow">
+
+<!-- 📱 APLICATIVO -->
+<meta name="theme-color" content="#111111">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Meu AI">
+
+<!-- 📱 PWA -->
+<link rel="manifest" href="/manifest.json">
+
+<!-- 🎨 SITE -->
+<link rel="stylesheet" href="style.css">
+```
+
 </head>
 
 <body>
 
 <div class="app">
 
-    <aside class="sidebar">
+```
+<aside class="sidebar">
 
-        <div class="logo">🤖 Meu AI</div>
+    <div class="logo">🤖 Meu AI</div>
 
-        <button class="new-chat" type="button" onclick="newChat()">
-            ＋ Nova conversa
+    <button class="new-chat" type="button" onclick="newChat()">
+        ＋ Nova conversa
+    </button>
+
+    <div class="history">
+        <h3>Conversas</h3>
+        <div id="historyList"></div>
+    </div>
+
+    <div class="sidebar-bottom">
+
+        <button type="button" onclick="toggleTheme()">
+            🌙 Tema
         </button>
 
-        <div class="history">
-            <h3>Conversas</h3>
-            <div id="historyList"></div>
-        </div>
+        <button type="button" onclick="showSettings()">
+            ⚙️ Definições
+        </button>
 
-        <div class="sidebar-bottom">
+    </div>
 
-            <button type="button" onclick="toggleTheme()">
-                🌙 Tema
-            </button>
-
-            <button type="button" onclick="showSettings()">
-                ⚙️ Definições
-            </button>
-
-        </div>
-
-    </aside>
+</aside>
 
 
-    <main class="main">
+<main class="main">
 
-        <header class="topbar">
+    <header class="topbar">
 
-            <button
-                class="menu"
-                type="button"
-                onclick="toggleSidebar()"
-                title="Abrir menu"
-            >
-                ☰
-            </button>
+        <button
+            class="menu"
+            type="button"
+            onclick="toggleSidebar()"
+            title="Abrir menu"
+        >
+            ☰
+        </button>
 
-            <span>Meu AI</span>
+        <span>Meu AI</span>
 
-            <!-- 🧍 ABRIR BONECO -->
-            <button
-                type="button"
-                onclick="abrirBoneco()"
-                title="Abrir boneco"
-            >
-                🧍
-            </button>
+        <!-- 📥 INSTALAR MEU AI -->
+        <button
+            id="installButton"
+            type="button"
+            style="display:none;"
+            title="Instalar Meu AI"
+        >
+            📥 Instalar Meu AI
+        </button>
 
-            <!-- 🔊 LIGAR/DESLIGAR VOZ -->
-            <button
-                id="voiceToggle"
-                type="button"
-                onclick="toggleVoice()"
-                title="Ligar/desligar voz"
-            >
-                🔊
-            </button>
+        <!-- 🧍 ABRIR BONECO -->
+        <button
+            type="button"
+            onclick="abrirBoneco()"
+            title="Abrir boneco"
+        >
+            🧍
+        </button>
 
-        </header>
+        <!-- 🔊 LIGAR/DESLIGAR VOZ -->
+        <button
+            id="voiceToggle"
+            type="button"
+            onclick="toggleVoice()"
+            title="Ligar/desligar voz"
+        >
+            🔊
+        </button>
 
-
-        <section class="chat" id="chat">
-
-            <div class="welcome" id="welcome">
-
-                <div class="robot">🤖</div>
-
-                <h1>Olá! Eu sou o Meu AI</h1>
-
-                <p>Pergunta-me qualquer coisa.</p>
-
-                <div class="suggestions">
-
-                    <button
-                        type="button"
-                        onclick="suggest('Explica-me como funciona a inteligência artificial')"
-                    >
-                        🧠 Explicar IA
-                    </button>
-
-                    <button
-                        type="button"
-                        onclick="suggest('Ajuda-me a criar um programa')"
-                    >
-                        💻 Programar
-                    </button>
-
-                    <button
-                        type="button"
-                        onclick="suggest('Dá-me uma ideia para um projeto')"
-                    >
-                        💡 Ideias
-                    </button>
-
-                    <button
-                        type="button"
-                        onclick="suggest('Conta-me uma curiosidade')"
-                    >
-                        🌎 Curiosidade
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
+    </header>
 
 
-        <div class="input-area">
+    <section class="chat" id="chat">
 
-            <div class="input-box">
+        <div class="welcome" id="welcome">
 
-                <!-- 📎 FICHEIRO -->
+            <div class="robot">🤖</div>
+
+            <h1>Olá! Eu sou o Meu AI</h1>
+
+            <p>Pergunta-me qualquer coisa.</p>
+
+            <div class="suggestions">
 
                 <button
-                    class="icon"
                     type="button"
-                    onclick="document.getElementById('fileInput').click()"
-                    title="Enviar ficheiro"
+                    onclick="suggest('Explica-me como funciona a inteligência artificial')"
                 >
-                    📎
+                    🧠 Explicar IA
                 </button>
 
-                <input
-                    type="file"
-                    id="fileInput"
-                    accept=".txt,.md,.json,.csv,.pdf"
-                    hidden
-                    onchange="uploadFile()"
-                >
-
-
-                <!-- 🖼️ IMAGEM -->
-
                 <button
-                    class="icon"
                     type="button"
-                    onclick="document.getElementById('imageInput').click()"
-                    title="Enviar imagem"
+                    onclick="suggest('Ajuda-me a criar um programa')"
                 >
-                    🖼️
+                    💻 Programar
                 </button>
 
-                <input
-                    type="file"
-                    id="imageInput"
-                    accept="image/*"
-                    hidden
-                    onchange="uploadImage()"
-                >
-
-
-                <!-- 💬 MENSAGEM -->
-
-                <textarea
-                    id="messageInput"
-                    placeholder="Escreve uma mensagem..."
-                    rows="1"
-                    onkeydown="handleKey(event)"
-                ></textarea>
-
-
-                <!-- 🎤 MICROFONE -->
-
                 <button
-                    class="icon"
                     type="button"
-                    onclick="startVoice()"
-                    title="Falar com o Meu AI"
+                    onclick="suggest('Dá-me uma ideia para um projeto')"
                 >
-                    🎤
+                    💡 Ideias
                 </button>
 
-
-                <!-- ➤ ENVIAR -->
-
                 <button
-                    class="send"
                     type="button"
-                    onclick="sendMessage()"
-                    title="Enviar"
+                    onclick="suggest('Conta-me uma curiosidade')"
                 >
-                    ➤
+                    🌎 Curiosidade
                 </button>
 
             </div>
 
-            <small>
-                O Meu AI pode cometer erros. Verifica informações importantes.
-            </small>
+        </div>
+
+    </section>
+
+
+    <div class="input-area">
+
+        <div class="input-box">
+
+            <!-- 📎 FICHEIRO -->
+
+            <button
+                class="icon"
+                type="button"
+                onclick="document.getElementById('fileInput').click()"
+                title="Enviar ficheiro"
+            >
+                📎
+            </button>
+
+            <input
+                type="file"
+                id="fileInput"
+                accept=".txt,.md,.json,.csv,.pdf"
+                hidden
+                onchange="uploadFile()"
+            >
+
+
+            <!-- 🖼️ IMAGEM -->
+
+            <button
+                class="icon"
+                type="button"
+                onclick="document.getElementById('imageInput').click()"
+                title="Enviar imagem"
+            >
+                🖼️
+            </button>
+
+            <input
+                type="file"
+                id="imageInput"
+                accept="image/*"
+                hidden
+                onchange="uploadImage()"
+            >
+
+
+            <!-- 💬 MENSAGEM -->
+
+            <textarea
+                id="messageInput"
+                placeholder="Escreve uma mensagem..."
+                rows="1"
+                onkeydown="handleKey(event)"
+            ></textarea>
+
+
+            <!-- 🎤 MICROFONE -->
+
+            <button
+                class="icon"
+                type="button"
+                onclick="startVoice()"
+                title="Falar com o Meu AI"
+            >
+                🎤
+            </button>
+
+
+            <!-- ➤ ENVIAR -->
+
+            <button
+                class="send"
+                type="button"
+                onclick="sendMessage()"
+                title="Enviar"
+            >
+                ➤
+            </button>
 
         </div>
 
-    </main>
+        <small>
+            O Meu AI pode cometer erros. Verifica informações importantes.
+        </small>
+
+    </div>
+
+</main>
+```
 
 </div>
-
 
 <!-- ⚙️ DEFINIÇÕES -->
 
 <div class="modal" id="settingsModal">
 
-    <div class="settings">
+```
+<div class="settings">
 
-        <button
-            class="close"
-            type="button"
-            onclick="closeSettings()"
+    <button
+        class="close"
+        type="button"
+        onclick="closeSettings()"
+    >
+        ✕
+    </button>
+
+    <h2>⚙️ Definições</h2>
+
+    <label>
+        Nome do assistente
+
+        <input
+            id="assistantName"
+            value="Meu AI"
         >
-            ✕
-        </button>
+    </label>
 
-        <h2>⚙️ Definições</h2>
+    <label>
+        Mensagem inicial
 
-        <label>
-            Nome do assistente
-
-            <input
-                id="assistantName"
-                value="Meu AI"
-            >
-        </label>
-
-        <label>
-            Mensagem inicial
-
-            <input
-                id="welcomeMessage"
-                value="Olá! Eu sou o Meu AI"
-            >
-        </label>
-
-        <button
-            class="save"
-            type="button"
-            onclick="saveSettings()"
+        <input
+            id="welcomeMessage"
+            value="Olá! Eu sou o Meu AI"
         >
-            Guardar
-        </button>
+    </label>
 
-    </div>
+    <button
+        class="save"
+        type="button"
+        onclick="saveSettings()"
+    >
+        Guardar
+    </button>
+
+</div>
+```
 
 </div>
 
-
 <script src="script.js"></script>
+
+<script>
+
+    // ==========================================
+    // 📱 SERVICE WORKER
+    // ==========================================
+
+    if ("serviceWorker" in navigator) {
+
+        window.addEventListener("load", () => {
+
+            navigator.serviceWorker.register("/sw.js")
+
+                .then(() => {
+                    console.log("📱 Meu AI pronto para instalação.");
+                })
+
+                .catch((erro) => {
+
+                    console.error(
+                        "Erro no Service Worker:",
+                        erro
+                    );
+
+                });
+
+        });
+
+    }
+
+
+    // ==========================================
+    // 📥 INSTALAÇÃO DO MEU AI
+    // ==========================================
+
+    let eventoInstalacao = null;
+
+    window.addEventListener(
+        "beforeinstallprompt",
+        (evento) => {
+
+            // Impede o navegador de mostrar o aviso sozinho
+            evento.preventDefault();
+
+            // Guarda o evento para o nosso botão
+            eventoInstalacao = evento;
+
+            const botao =
+                document.getElementById("installButton");
+
+            if (!botao) return;
+
+            // Mostra o botão
+            botao.style.display = "block";
+
+            botao.onclick = async () => {
+
+                if (!eventoInstalacao) return;
+
+                // Abre a janela de instalação
+                eventoInstalacao.prompt();
+
+                // Espera a escolha do utilizador
+                const resultado =
+                    await eventoInstalacao.userChoice;
+
+                console.log(
+                    "Instalação:",
+                    resultado.outcome
+                );
+
+                // Limpa o evento
+                eventoInstalacao = null;
+
+                // Esconde o botão
+                botao.style.display = "none";
+
+            };
+
+        }
+    );
+
+
+    // ==========================================
+    // ✅ MEU AI FOI INSTALADO
+    // ==========================================
+
+    window.addEventListener(
+        "appinstalled",
+        () => {
+
+            console.log("✅ Meu AI instalado!");
+
+            const botao =
+                document.getElementById("installButton");
+
+            if (botao) {
+                botao.style.display = "none";
+            }
+
+        }
+    );
+
+</script>
 
 </body>
 </html>
