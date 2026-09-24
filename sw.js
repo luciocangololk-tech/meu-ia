@@ -1,11 +1,13 @@
-const CACHE_NAME = "meu-ai-v1";
+const CACHE_NAME = "meu-ai-v2";
 
 const ARQUIVOS = [
     "/",
     "/index.html",
     "/style.css",
     "/script.js",
-    "/manifest.json"
+    "/manifest.json",
+    "/icon-192.png",
+    "/icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
@@ -19,13 +21,13 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
     event.waitUntil(
-        caches.keys().then((chaves) => {
-            return Promise.all(
-                chaves
-                    .filter((chave) => chave !== CACHE_NAME)
-                    .map((chave) => caches.delete(chave))
-            );
-        })
+        caches.keys().then((keys) =>
+            Promise.all(
+                keys
+                    .filter((key) => key !== CACHE_NAME)
+                    .map((key) => caches.delete(key))
+            )
+        )
     );
 
     self.clients.claim();
@@ -33,7 +35,9 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
     event.respondWith(
-        fetch(event.request)
-            .catch(() => caches.match(event.request))
+        caches.match(event.request)
+            .then((response) => {
+                return response || fetch(event.request);
+            })
     );
 });
