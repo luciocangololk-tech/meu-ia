@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 3000;
 const OLLAMA_URL = "https://ollama.com";
 
 const OLLAMA_API_KEY =
-    process.env.OLLAMA_API_KEY;
+process.env.OLLAMA_API_KEY;
 
 const MODELO_TEXTO = "gemma4:cloud";
 const MODELO_IMAGEM = "gemma4:cloud";
@@ -27,11 +27,14 @@ const MODELO_IMAGEM = "gemma4:cloud";
 
 if (!OLLAMA_API_KEY) {
 
-    console.log("");
-    console.log("⚠️ AVISO:");
-    console.log("OLLAMA_API_KEY não encontrada.");
-    console.log("Verifica o teu ficheiro .env");
-    console.log("");
+```
+console.log("");
+console.log("⚠️ AVISO:");
+console.log("OLLAMA_API_KEY não encontrada.");
+console.log("Verifica o teu ficheiro .env");
+console.log("");
+```
+
 }
 
 // ===============================
@@ -39,8 +42,8 @@ if (!OLLAMA_API_KEY) {
 // ===============================
 
 const ARQUIVO_MEMORIA = path.join(
-    __dirname,
-    "memoria.json"
+__dirname,
+"memoria.json"
 );
 
 // ===============================
@@ -48,10 +51,59 @@ const ARQUIVO_MEMORIA = path.join(
 // ===============================
 
 app.use(express.json({
-    limit: "30mb"
+limit: "30mb"
 }));
 
+// ===============================
+// 📱 ARQUIVOS DO MEU AI / PWA
+// ===============================
+
+// Servir os ficheiros do site
 app.use(express.static(__dirname));
+
+// Manifest
+app.get("/manifest.json", (req, res) => {
+
+```
+res.sendFile(
+    path.join(__dirname, "manifest.json")
+);
+```
+
+});
+
+// Service Worker
+app.get("/sw.js", (req, res) => {
+
+```
+res.sendFile(
+    path.join(__dirname, "sw.js")
+);
+```
+
+});
+
+// Ícone 192x192
+app.get("/icon-192.png", (req, res) => {
+
+```
+res.sendFile(
+    path.join(__dirname, "icon-192.png")
+);
+```
+
+});
+
+// Ícone 512x512
+app.get("/icon-512.png", (req, res) => {
+
+```
+res.sendFile(
+    path.join(__dirname, "icon-512.png")
+);
+```
+
+});
 
 // ===============================
 // MEMÓRIA
@@ -59,82 +111,91 @@ app.use(express.static(__dirname));
 
 function memoriaPadrao() {
 
-    return {
+```
+return {
 
-        nome: "",
+    nome: "",
 
-        gosta_de: [],
+    gosta_de: [],
 
-        jogo_favorito: "",
+    jogo_favorito: "",
 
-        cor_favorita: "",
+    cor_favorita: "",
 
-        comida_favorita: "",
+    comida_favorita: "",
 
-        notas: []
-    };
+    notas: []
+};
+```
+
 }
 
 function carregarMemoria() {
 
-    try {
+```
+try {
 
-        if (
-            !fs.existsSync(
-                ARQUIVO_MEMORIA
-            )
-        ) {
-
-            return memoriaPadrao();
-        }
-
-        const dados =
-            fs.readFileSync(
-                ARQUIVO_MEMORIA,
-                "utf8"
-            );
-
-        return JSON.parse(dados);
-
-    } catch (erro) {
-
-        console.log(
-            "Erro ao carregar memória:",
-            erro.message
-        );
+    if (
+        !fs.existsSync(
+            ARQUIVO_MEMORIA
+        )
+    ) {
 
         return memoriaPadrao();
     }
+
+    const dados =
+        fs.readFileSync(
+            ARQUIVO_MEMORIA,
+            "utf8"
+        );
+
+    return JSON.parse(dados);
+
+} catch (erro) {
+
+    console.log(
+        "Erro ao carregar memória:",
+        erro.message
+    );
+
+    return memoriaPadrao();
+}
+```
+
 }
 
 function guardarMemoria(memoria) {
 
-    try {
+```
+try {
 
-        fs.writeFileSync(
+    fs.writeFileSync(
 
-            ARQUIVO_MEMORIA,
+        ARQUIVO_MEMORIA,
 
-            JSON.stringify(
-                memoria,
-                null,
-                2
-            ),
+        JSON.stringify(
+            memoria,
+            null,
+            2
+        ),
 
-            "utf8"
-        );
+        "utf8"
+    );
 
-    } catch (erro) {
+} catch (erro) {
 
-        console.log(
-            "Erro ao guardar memória:",
-            erro.message
-        );
-    }
+    console.log(
+        "Erro ao guardar memória:",
+        erro.message
+    );
+}
+```
+
 }
 
 let memoria =
-    carregarMemoria();
+carregarMemoria();
 
 // ===============================
 // ATUALIZAR MEMÓRIA
@@ -142,128 +203,40 @@ let memoria =
 
 function atualizarMemoria(texto) {
 
-    if (!texto) return;
+```
+if (!texto) return;
 
-    const t =
-        texto.toLowerCase();
+const t =
+    texto.toLowerCase();
 
-    const nome =
+const nome =
+    texto.match(
+        /(?:meu nome é|me chamo|chamo-me)\s+([a-záàâãéêíóôõúç]+)/i
+    );
+
+if (nome) {
+
+    memoria.nome =
+        nome[1];
+}
+
+if (
+    t.includes("eu gosto de") ||
+    t.includes("gosto de")
+) {
+
+    const resultado =
         texto.match(
-            /(?:meu nome é|me chamo|chamo-me)\s+([a-záàâãéêíóôõúç]+)/i
+            /gosto de\s+(.+)/i
         );
 
-    if (nome) {
-
-        memoria.nome =
-            nome[1];
-    }
-
     if (
-        t.includes("eu gosto de") ||
-        t.includes("gosto de")
+        resultado &&
+        resultado[1]
     ) {
 
-        const resultado =
-            texto.match(
-                /gosto de\s+(.+)/i
-            );
-
-        if (
-            resultado &&
+        const coisa =
             resultado[1]
-        ) {
-
-            const coisa =
-                resultado[1]
-                    .replace(
-                        /[.!?]+$/,
-                        ""
-                    )
-                    .trim();
-
-            if (
-                coisa &&
-                !memoria.gosta_de.includes(
-                    coisa
-                )
-            ) {
-
-                memoria.gosta_de.push(
-                    coisa
-                );
-            }
-        }
-    }
-
-    const jogo =
-        texto.match(
-            /(?:meu jogo favorito é|meu jogo preferido é)\s+(.+)/i
-        );
-
-    if (
-        jogo &&
-        jogo[1]
-    ) {
-
-        memoria.jogo_favorito =
-            jogo[1]
-                .replace(
-                    /[.!?]+$/,
-                    ""
-                )
-                .trim();
-    }
-
-    const cor =
-        texto.match(
-            /(?:minha cor favorita é|minha cor preferida é)\s+(.+)/i
-        );
-
-    if (
-        cor &&
-        cor[1]
-    ) {
-
-        memoria.cor_favorita =
-            cor[1]
-                .replace(
-                    /[.!?]+$/,
-                    ""
-                )
-                .trim();
-    }
-
-    const comida =
-        texto.match(
-            /(?:minha comida favorita é|minha comida preferida é)\s+(.+)/i
-        );
-
-    if (
-        comida &&
-        comida[1]
-    ) {
-
-        memoria.comida_favorita =
-            comida[1]
-                .replace(
-                    /[.!?]+$/,
-                    ""
-                )
-                .trim();
-    }
-
-    const nota =
-        texto.match(
-            /(?:lembra que|lembre que)\s+(.+)/i
-        );
-
-    if (
-        nota &&
-        nota[1]
-    ) {
-
-        const novaNota =
-            nota[1]
                 .replace(
                     /[.!?]+$/,
                     ""
@@ -271,21 +244,112 @@ function atualizarMemoria(texto) {
                 .trim();
 
         if (
-            novaNota &&
-            !memoria.notas.includes(
-                novaNota
+            coisa &&
+            !memoria.gosta_de.includes(
+                coisa
             )
         ) {
 
-            memoria.notas.push(
-                novaNota
+            memoria.gosta_de.push(
+                coisa
             );
         }
     }
+}
 
-    guardarMemoria(
-        memoria
+const jogo =
+    texto.match(
+        /(?:meu jogo favorito é|meu jogo preferido é)\s+(.+)/i
     );
+
+if (
+    jogo &&
+    jogo[1]
+) {
+
+    memoria.jogo_favorito =
+        jogo[1]
+            .replace(
+                /[.!?]+$/,
+                ""
+            )
+            .trim();
+}
+
+const cor =
+    texto.match(
+        /(?:minha cor favorita é|minha cor preferida é)\s+(.+)/i
+    );
+
+if (
+    cor &&
+    cor[1]
+) {
+
+    memoria.cor_favorita =
+        cor[1]
+            .replace(
+                /[.!?]+$/,
+                ""
+            )
+            .trim();
+}
+
+const comida =
+    texto.match(
+        /(?:minha comida favorita é|minha comida preferida é)\s+(.+)/i
+    );
+
+if (
+    comida &&
+    comida[1]
+) {
+
+    memoria.comida_favorita =
+        comida[1]
+            .replace(
+                /[.!?]+$/,
+                ""
+            )
+            .trim();
+}
+
+const nota =
+    texto.match(
+        /(?:lembra que|lembre que)\s+(.+)/i
+    );
+
+if (
+    nota &&
+    nota[1]
+) {
+
+    const novaNota =
+        nota[1]
+            .replace(
+                /[.!?]+$/,
+                ""
+            )
+            .trim();
+
+    if (
+        novaNota &&
+        !memoria.notas.includes(
+            novaNota
+        )
+    ) {
+
+        memoria.notas.push(
+            novaNota
+        );
+    }
+}
+
+guardarMemoria(
+    memoria
+);
+```
+
 }
 
 // ===============================
@@ -294,74 +358,77 @@ function atualizarMemoria(texto) {
 
 function memoriaParaTexto() {
 
-    const partes = [];
+```
+const partes = [];
 
-    if (memoria.nome) {
+if (memoria.nome) {
 
-        partes.push(
-            `Nome do utilizador: ${memoria.nome}`
-        );
-    }
-
-    if (
-        memoria.gosta_de &&
-        memoria.gosta_de.length
-    ) {
-
-        partes.push(
-            `Gosta de: ${memoria.gosta_de.join(", ")}`
-        );
-    }
-
-    if (
-        memoria.jogo_favorito
-    ) {
-
-        partes.push(
-            `Jogo favorito: ${memoria.jogo_favorito}`
-        );
-    }
-
-    if (
-        memoria.cor_favorita
-    ) {
-
-        partes.push(
-            `Cor favorita: ${memoria.cor_favorita}`
-        );
-    }
-
-    if (
-        memoria.comida_favorita
-    ) {
-
-        partes.push(
-            `Comida favorita: ${memoria.comida_favorita}`
-        );
-    }
-
-    if (
-        memoria.notas &&
-        memoria.notas.length
-    ) {
-
-        partes.push(
-            `Notas: ${memoria.notas
-                .slice(-5)
-                .join("; ")}`
-        );
-    }
-
-    if (!partes.length) {
-
-        return (
-            "Não há informações guardadas sobre o utilizador."
-        );
-    }
-
-    return partes.join(
-        "\n"
+    partes.push(
+        `Nome do utilizador: ${memoria.nome}`
     );
+}
+
+if (
+    memoria.gosta_de &&
+    memoria.gosta_de.length
+) {
+
+    partes.push(
+        `Gosta de: ${memoria.gosta_de.join(", ")}`
+    );
+}
+
+if (
+    memoria.jogo_favorito
+) {
+
+    partes.push(
+        `Jogo favorito: ${memoria.jogo_favorito}`
+    );
+}
+
+if (
+    memoria.cor_favorita
+) {
+
+    partes.push(
+        `Cor favorita: ${memoria.cor_favorita}`
+    );
+}
+
+if (
+    memoria.comida_favorita
+) {
+
+    partes.push(
+        `Comida favorita: ${memoria.comida_favorita}`
+    );
+}
+
+if (
+    memoria.notas &&
+    memoria.notas.length
+) {
+
+    partes.push(
+        `Notas: ${memoria.notas
+            .slice(-5)
+            .join("; ")}`
+    );
+}
+
+if (!partes.length) {
+
+    return (
+        "Não há informações guardadas sobre o utilizador."
+    );
+}
+
+return partes.join(
+    "\n"
+);
+```
+
 }
 
 // ===============================
@@ -369,30 +436,33 @@ function memoriaParaTexto() {
 // ===============================
 
 function limitarTexto(
-    texto,
-    limite = 2500
+texto,
+limite = 2500
 ) {
 
-    if (!texto) {
+```
+if (!texto) {
 
-        return "";
-    }
+    return "";
+}
 
-    if (
-        texto.length <=
+if (
+    texto.length <=
+    limite
+) {
+
+    return texto;
+}
+
+return (
+    texto.slice(
+        0,
         limite
-    ) {
+    ) +
+    "\n[Conteúdo cortado.]"
+);
+```
 
-        return texto;
-    }
-
-    return (
-        texto.slice(
-            0,
-            limite
-        ) +
-        "\n[Conteúdo cortado.]"
-    );
 }
 
 // ===============================
@@ -400,68 +470,71 @@ function limitarTexto(
 // ===============================
 
 function prepararHistorico(
-    messages
+messages
 ) {
 
-    if (
-        !Array.isArray(messages)
-    ) {
+```
+if (
+    !Array.isArray(messages)
+) {
 
-        return [];
-    }
+    return [];
+}
 
-    const ultimas =
-        messages.slice(-4);
+const ultimas =
+    messages.slice(-4);
 
-    return ultimas.map(
-        function(mensagem) {
+return ultimas.map(
+    function(mensagem) {
 
-            let role =
-                "user";
+        let role =
+            "user";
 
-            if (
-                mensagem.role ===
-                "assistant"
-            ) {
+        if (
+            mensagem.role ===
+            "assistant"
+        ) {
 
-                role =
-                    "assistant";
-            }
-
-            if (
-                mensagem.role ===
-                "system"
-            ) {
-
-                role =
-                    "system";
-            }
-
-            let content =
-                mensagem.content;
-
-            if (
-                typeof content ===
-                "string"
-            ) {
-
-                content =
-                    limitarTexto(
-                        content,
-                        1200
-                    );
-            }
-
-            return {
-
-                role:
-                    role,
-
-                content:
-                    content
-            };
+            role =
+                "assistant";
         }
-    );
+
+        if (
+            mensagem.role ===
+            "system"
+        ) {
+
+            role =
+                "system";
+        }
+
+        let content =
+            mensagem.content;
+
+        if (
+            typeof content ===
+            "string"
+        ) {
+
+            content =
+                limitarTexto(
+                    content,
+                    1200
+                );
+        }
+
+        return {
+
+            role:
+                role,
+
+            content:
+                content
+        };
+    }
+);
+```
+
 }
 
 // ===============================
@@ -469,41 +542,44 @@ function prepararHistorico(
 // ===============================
 
 async function lerPDF(
-    base64
+base64
 ) {
 
-    try {
+```
+try {
 
-        const buffer =
-            Buffer.from(
-                base64,
-                "base64"
-            );
-
-        const parser =
-            new PDFParse({
-                data: buffer
-            });
-
-        const resultado =
-            await parser.getText();
-
-        await parser.destroy();
-
-        return limitarTexto(
-            resultado.text || "",
-            6000
+    const buffer =
+        Buffer.from(
+            base64,
+            "base64"
         );
 
-    } catch (erro) {
+    const parser =
+        new PDFParse({
+            data: buffer
+        });
 
-        console.log(
-            "Erro ao ler PDF:",
-            erro.message
-        );
+    const resultado =
+        await parser.getText();
 
-        return "";
-    }
+    await parser.destroy();
+
+    return limitarTexto(
+        resultado.text || "",
+        6000
+    );
+
+} catch (erro) {
+
+    console.log(
+        "Erro ao ler PDF:",
+        erro.message
+    );
+
+    return "";
+}
+```
+
 }
 
 // ===============================
@@ -511,10 +587,13 @@ async function lerPDF(
 // ===============================
 
 function criarSistema(
-    temImagem = false
+temImagem = false
 ) {
 
-    let sistema = `
+```
+let sistema = `
+```
+
 Tu és o Meu AI.
 
 REGRA PRINCIPAL:
@@ -540,57 +619,67 @@ Memória do utilizador:
 ${memoriaParaTexto()}
 `;
 
-    if (temImagem) {
+```
+if (temImagem) {
 
-        sistema += `
+    sistema += `
+```
+
 O utilizador enviou uma imagem.
 
 Analisa a imagem e responde à pergunta sobre ela.
 `;
-    }
-
-    return sistema;
 }
+
+```
+return sistema;
+```
+
+}
+
 // ===============================
 // LIMPAR BASE64 DA IMAGEM
 // ===============================
 
 function limparBase64Imagem(
-    imagem
+imagem
 ) {
 
-    if (!imagem) {
+```
+if (!imagem) {
 
-        return "";
-    }
+    return "";
+}
 
-    if (
-        typeof imagem === "object" &&
-        imagem.data
-    ) {
+if (
+    typeof imagem === "object" &&
+    imagem.data
+) {
 
-        imagem =
-            imagem.data;
-    }
+    imagem =
+        imagem.data;
+}
 
-    if (
-        typeof imagem !==
-        "string"
-    ) {
+if (
+    typeof imagem !==
+    "string"
+) {
 
-        return "";
-    }
+    return "";
+}
 
-    if (
-        imagem.includes(",")
-    ) {
+if (
+    imagem.includes(",")
+) {
 
-        return imagem.split(
-            ","
-        )[1];
-    }
+    return imagem.split(
+        ","
+    )[1];
+}
 
-    return imagem;
+return imagem;
+```
+
 }
 
 // ===============================
@@ -598,86 +687,89 @@ function limparBase64Imagem(
 // ===============================
 
 async function falarComOllama(
-    modelo,
-    mensagens,
-    temImagem = false
+modelo,
+mensagens,
+temImagem = false
 ) {
 
-    const controlador =
-        new AbortController();
+```
+const controlador =
+    new AbortController();
 
-    const temporizador =
-        setTimeout(
-            () =>
-                controlador.abort(),
-            120000
+const temporizador =
+    setTimeout(
+        () =>
+            controlador.abort(),
+        120000
+    );
+
+try {
+
+    const resposta =
+        await fetch(
+            `${OLLAMA_URL}/api/chat`,
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json",
+
+                    "Authorization":
+                        `Bearer ${OLLAMA_API_KEY}`
+                },
+
+                body:
+                    JSON.stringify({
+
+                        model:
+                            modelo,
+
+                        messages:
+                            mensagens,
+
+                        stream:
+                            false,
+
+                        options: {
+
+                            num_predict:
+                                temImagem
+                                    ? 160
+                                    : 80,
+
+                            temperature:
+                                0.4
+                        }
+                    }),
+
+                signal:
+                    controlador.signal
+            }
         );
 
-    try {
+    if (!resposta.ok) {
 
-        const resposta =
-            await fetch(
-                `${OLLAMA_URL}/api/chat`,
-                {
+        const erroTexto =
+            await resposta.text();
 
-                    method: "POST",
-
-                    headers: {
-
-                        "Content-Type":
-                            "application/json",
-
-                        "Authorization":
-                            `Bearer ${OLLAMA_API_KEY}`
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            model:
-                                modelo,
-
-                            messages:
-                                mensagens,
-
-                            stream:
-                                false,
-
-                            options: {
-
-                                num_predict:
-                                    temImagem
-                                        ? 160
-                                        : 80,
-
-                                temperature:
-                                    0.4
-                            }
-                        }),
-
-                    signal:
-                        controlador.signal
-                }
-            );
-
-        if (!resposta.ok) {
-
-            const erroTexto =
-                await resposta.text();
-
-            throw new Error(
-                `Ollama respondeu ${resposta.status}: ${erroTexto}`
-            );
-        }
-
-        return await resposta.json();
-
-    } finally {
-
-        clearTimeout(
-            temporizador
+        throw new Error(
+            `Ollama respondeu ${resposta.status}: ${erroTexto}`
         );
     }
+
+    return await resposta.json();
+
+} finally {
+
+    clearTimeout(
+        temporizador
+    );
+}
+```
+
 }
 
 // ===============================
@@ -685,339 +777,300 @@ async function falarComOllama(
 // ===============================
 
 app.post(
-    "/api/chat",
-    async function(req, res) {
+"/api/chat",
+async function(req, res) {
 
-        try {
+```
+    try {
 
-            const {
+        const {
 
-                messages = [],
+            messages = [],
 
-                file = null,
+            file = null,
 
-                image = null
+            image = null
 
-            } = req.body;
+        } = req.body;
 
-            // =========================
-            // ÚLTIMA MENSAGEM
-            // =========================
+        const ultimaMensagem =
 
-            const ultimaMensagem =
+            Array.isArray(
+                messages
+            ) &&
+            messages.length
 
-                Array.isArray(
-                    messages
-                ) &&
-                messages.length
+                ? messages[
+                    messages.length - 1
+                ]
 
-                    ? messages[
-                        messages.length - 1
-                    ]
+                : null;
 
-                    : null;
+        const textoUsuario =
 
-            const textoUsuario =
+            ultimaMensagem &&
 
-                ultimaMensagem &&
+            typeof ultimaMensagem.content ===
+            "string"
 
-                typeof ultimaMensagem.content ===
-                "string"
+                ? ultimaMensagem.content
 
-                    ? ultimaMensagem.content
+                : "";
 
-                    : "";
+        if (textoUsuario) {
 
-            // =========================
-            // MEMÓRIA
-            // =========================
+            atualizarMemoria(
+                textoUsuario
+            );
+        }
 
-            if (textoUsuario) {
+        const historico =
+            prepararHistorico(
+                messages
+            );
 
-                atualizarMemoria(
-                    textoUsuario
-                );
+        let conteudoFicheiro =
+            "";
+
+        if (file) {
+
+            if (
+                file.type ===
+                "pdf" &&
+                file.data
+            ) {
+
+                conteudoFicheiro =
+                    await lerPDF(
+                        file.data
+                    );
+
+            } else if (
+                file.content
+            ) {
+
+                conteudoFicheiro =
+                    limitarTexto(
+                        file.content,
+                        6000
+                    );
+            }
+        }
+
+        const mensagens = [];
+
+        mensagens.push({
+
+            role:
+                "system",
+
+            content:
+                criarSistema(
+                    !!image
+                )
+        });
+
+        for (
+            const mensagem
+            of historico
+        ) {
+
+            if (
+                mensagem.role ===
+                "system"
+            ) {
+
+                continue;
             }
 
-            // =========================
-            // HISTÓRICO
-            // =========================
+            mensagens.push(
+                mensagem
+            );
+        }
 
-            const historico =
-                prepararHistorico(
-                    messages
-                );
-
-            // =========================
-            // FICHEIRO
-            // =========================
-
-            let conteudoFicheiro =
-                "";
-
-            if (file) {
-
-                if (
-                    file.type ===
-                    "pdf" &&
-                    file.data
-                ) {
-
-                    conteudoFicheiro =
-                        await lerPDF(
-                            file.data
-                        );
-
-                } else if (
-                    file.content
-                ) {
-
-                    conteudoFicheiro =
-                        limitarTexto(
-                            file.content,
-                            6000
-                        );
-                }
-            }
-
-            // =========================
-            // MENSAGENS
-            // =========================
-
-            const mensagens = [];
+        if (
+            conteudoFicheiro
+        ) {
 
             mensagens.push({
 
                 role:
-                    "system",
+                    "user",
 
                 content:
-                    criarSistema(
-                        !!image
-                    )
-            });
-
-            for (
-                const mensagem
-                of historico
-            ) {
-
-                if (
-                    mensagem.role ===
-                    "system"
-                ) {
-
-                    continue;
-                }
-
-                mensagens.push(
-                    mensagem
-                );
-            }
-
-            // =========================
-            // FICHEIRO
-            // =========================
-
-            if (
-                conteudoFicheiro
-            ) {
-
-                mensagens.push({
-
-                    role:
-                        "user",
-
-                    content:
-                        `Conteúdo do ficheiro:
+                    `Conteúdo do ficheiro:
+```
 
 ${conteudoFicheiro}
 
 Responde usando este conteúdo quando necessário.`
-                });
-            }
+});
+}
 
-            // =========================
-            // MODELO
-            // =========================
+```
+        let modelo =
+            MODELO_TEXTO;
 
-            let modelo =
-                MODELO_TEXTO;
+        if (image) {
 
-            // =========================
-            // IMAGEM
-            // =========================
+            modelo =
+                MODELO_IMAGEM;
 
-            if (image) {
+            const pergunta =
 
-                modelo =
-                    MODELO_IMAGEM;
+                textoUsuario ||
 
-                const pergunta =
+                "Analisa esta imagem.";
 
-                    textoUsuario ||
-
-                    "Analisa esta imagem.";
-
-                const base64 =
-                    limparBase64Imagem(
-                        image
-                    );
-
-                if (!base64) {
-
-                    return res
-                        .status(400)
-                        .json({
-
-                            reply:
-                                "Não consegui ler a imagem."
-                        });
-                }
-
-                mensagens.push({
-
-                    role:
-                        "user",
-
-                    content:
-                        pergunta,
-
-                    images: [
-                        base64
-                    ]
-                });
-            }
-
-            // =========================
-            // LOG
-            // =========================
-
-            console.log("");
-
-            console.log(
-                "=============================="
-            );
-
-            console.log(
-                `🤖 Modelo: ${modelo}`
-            );
-
-            console.log(
-                "☁️ A enviar para Ollama Cloud..."
-            );
-
-            const inicio =
-                Date.now();
-
-            // =========================
-            // OLLAMA CLOUD
-            // =========================
-
-            const dados =
-                await falarComOllama(
-
-                    modelo,
-
-                    mensagens,
-
-                    !!image
+            const base64 =
+                limparBase64Imagem(
+                    image
                 );
 
-            const tempo =
+            if (!base64) {
 
-                (
-                    Date.now() -
-                    inicio
-                ) / 1000;
+                return res
+                    .status(400)
+                    .json({
 
-            console.log(
-                `⚡ Resposta em ${tempo.toFixed(1)}s`
-            );
-
-            // =========================
-            // RESPOSTA
-            // =========================
-
-            const respostaFinal =
-
-                dados &&
-
-                dados.message &&
-
-                dados.message.content
-
-                    ? dados.message.content
-
-                    : "Não consegui gerar uma resposta.";
-
-            console.log(
-                "✅ Resposta recebida!"
-            );
-
-            console.log(
-                "=============================="
-            );
-
-            res.json({
-
-                reply:
-                    respostaFinal
-            });
-
-        } catch (erro) {
-
-            console.log("");
-
-            console.log(
-                "=============================="
-            );
-
-            console.error(
-                "❌ ERRO NO CHAT:"
-            );
-
-            console.error(
-                erro.message
-            );
-
-            console.log(
-                "=============================="
-            );
-
-            let mensagemErro =
-                "Não consegui contactar o Ollama Cloud.";
-
-            if (
-                erro.name ===
-                "AbortError"
-            ) {
-
-                mensagemErro =
-                    "O Ollama Cloud demorou demasiado tempo a responder.";
+                        reply:
+                            "Não consegui ler a imagem."
+                    });
             }
 
-            if (
-                erro.message &&
-                erro.message.includes(
-                    "401"
-                )
-            ) {
+            mensagens.push({
 
-                mensagemErro =
-                    "A chave do Ollama Cloud não foi aceite. Verifica o ficheiro .env.";
-            }
+                role:
+                    "user",
 
-            res.status(500).json({
+                content:
+                    pergunta,
 
-                reply:
-                    mensagemErro,
-
-                error:
-                    erro.message
+                images: [
+                    base64
+                ]
             });
         }
+
+        console.log("");
+
+        console.log(
+            "=============================="
+        );
+
+        console.log(
+            `🤖 Modelo: ${modelo}`
+        );
+
+        console.log(
+            "☁️ A enviar para Ollama Cloud..."
+        );
+
+        const inicio =
+            Date.now();
+
+        const dados =
+            await falarComOllama(
+
+                modelo,
+
+                mensagens,
+
+                !!image
+            );
+
+        const tempo =
+
+            (
+                Date.now() -
+                inicio
+            ) / 1000;
+
+        console.log(
+            `⚡ Resposta em ${tempo.toFixed(1)}s`
+        );
+
+        const respostaFinal =
+
+            dados &&
+
+            dados.message &&
+
+            dados.message.content
+
+                ? dados.message.content
+
+                : "Não consegui gerar uma resposta.";
+
+        console.log(
+            "✅ Resposta recebida!"
+        );
+
+        console.log(
+            "=============================="
+        );
+
+        res.json({
+
+            reply:
+                respostaFinal
+        });
+
+    } catch (erro) {
+
+        console.log("");
+
+        console.log(
+            "=============================="
+        );
+
+        console.error(
+            "❌ ERRO NO CHAT:"
+        );
+
+        console.error(
+            erro.message
+        );
+
+        console.log(
+            "=============================="
+        );
+
+        let mensagemErro =
+            "Não consegui contactar o Ollama Cloud.";
+
+        if (
+            erro.name ===
+            "AbortError"
+        ) {
+
+            mensagemErro =
+                "O Ollama Cloud demorou demasiado tempo a responder.";
+        }
+
+        if (
+            erro.message &&
+            erro.message.includes(
+                "401"
+            )
+        ) {
+
+            mensagemErro =
+                "A chave do Ollama Cloud não foi aceite. Verifica o ficheiro .env.";
+        }
+
+        res.status(500).json({
+
+            reply:
+                mensagemErro,
+
+            error:
+                erro.message
+        });
     }
+}
+```
+
 );
 
 // ===============================
@@ -1025,13 +1078,16 @@ Responde usando este conteúdo quando necessário.`
 // ===============================
 
 app.get(
-    "/memoria",
-    function(req, res) {
+"/memoria",
+function(req, res) {
 
-        res.json(
-            memoria
-        );
-    }
+```
+    res.json(
+        memoria
+    );
+}
+```
+
 );
 
 // ===============================
@@ -1039,13 +1095,16 @@ app.get(
 // ===============================
 
 app.get(
-    "/teste",
-    function(req, res) {
+"/teste",
+function(req, res) {
 
-        res.send(
-            "Meu AI está funcionando!"
-        );
-    }
+```
+    res.send(
+        "Meu AI está funcionando!"
+    );
+}
+```
+
 );
 
 // ===============================
@@ -1053,104 +1112,137 @@ app.get(
 // ===============================
 
 app.get(
-    "/teste-ollama",
-    async function(req, res) {
+"/teste-ollama",
+async function(req, res) {
+
+```
+    try {
+
+        const resposta =
+            await fetch(
+                `${OLLAMA_URL}/api/tags`,
+                {
+
+                    method:
+                        "GET",
+
+                    headers: {
+
+                        "Authorization":
+                            `Bearer ${OLLAMA_API_KEY}`
+                    }
+                }
+            );
+
+        const texto =
+            await resposta.text();
+
+        let dados;
 
         try {
 
-            const resposta =
-                await fetch(
-                    `${OLLAMA_URL}/api/tags`,
-                    {
-
-                        method:
-                            "GET",
-
-                        headers: {
-
-                            "Authorization":
-                                `Bearer ${OLLAMA_API_KEY}`
-                        }
-                    }
+            dados =
+                JSON.parse(
+                    texto
                 );
 
-            const texto =
-                await resposta.text();
+        } catch {
 
-            let dados;
-
-            try {
-
-                dados =
-                    JSON.parse(
-                        texto
-                    );
-
-            } catch {
-
-                dados = {
-                    resposta:
-                        texto
-                };
-            }
-
-            if (
-                !resposta.ok
-            ) {
-
-                return res
-                    .status(
-                        resposta.status
-                    )
-                    .json({
-
-                        ollama:
-                            "erro",
-
-                        status:
-                            resposta.status,
-
-                        detalhes:
-                            dados
-                    });
-            }
-
-            res.json({
-
-                ollama:
-                    "funcionando",
-
-                modelos:
-                    dados.models ||
-                    []
-            });
-
-        } catch (erro) {
-
-            res.status(500).json({
-
-                ollama:
-                    "não respondeu",
-
-                erro:
-                    erro.message
-            });
+            dados = {
+                resposta:
+                    texto
+            };
         }
+
+        if (
+            !resposta.ok
+        ) {
+
+            return res
+                .status(
+                    resposta.status
+                )
+                .json({
+
+                    ollama:
+                        "erro",
+
+                    status:
+                        resposta.status,
+
+                    detalhes:
+                        dados
+                });
+        }
+
+        res.json({
+
+            ollama:
+                "funcionando",
+
+            modelos:
+                dados.models ||
+                []
+        });
+
+    } catch (erro) {
+
+        res.status(500).json({
+
+            ollama:
+                "não respondeu",
+
+            erro:
+                erro.message
+        });
     }
+}
+```
+
 );
+
 // ===============================
 // INICIAR SERVIDOR
 // ===============================
 
 app.listen(PORT, "0.0.0.0", () => {
-    console.log("");
-    console.log("========================================");
-    console.log("🤖 MEU AI");
-    console.log("========================================");
-    console.log(`🌐 Servidor: http://localhost:${PORT}`);
-    console.log(`☁️ Ollama Cloud: ${OLLAMA_URL}`);
-    console.log(`🧠 Modelo: ${MODELO_TEXTO}`);
-    console.log("🚀 MODO CLOUD ATIVADO!");
-    console.log("========================================");
-    console.log("");
+
+```
+console.log("");
+
+console.log(
+    "========================================"
+);
+
+console.log(
+    "🤖 MEU AI"
+);
+
+console.log(
+    "========================================"
+);
+
+console.log(
+    `🌐 Servidor: http://localhost:${PORT}`
+);
+
+console.log(
+    `☁️ Ollama Cloud: ${OLLAMA_URL}`
+);
+
+console.log(
+    `🧠 Modelo: ${MODELO_TEXTO}`
+);
+
+console.log(
+    "🚀 MODO CLOUD ATIVADO!"
+);
+
+console.log(
+    "========================================"
+);
+
+console.log("");
+```
+
 });
