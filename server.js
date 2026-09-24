@@ -15,8 +15,7 @@ const PORT = process.env.PORT || 3000;
 
 const OLLAMA_URL = "https://ollama.com";
 
-const OLLAMA_API_KEY =
-process.env.OLLAMA_API_KEY;
+const OLLAMA_API_KEY = process.env.OLLAMA_API_KEY;
 
 const MODELO_TEXTO = "gemma4:cloud";
 const MODELO_IMAGEM = "gemma4:cloud";
@@ -26,25 +25,18 @@ const MODELO_IMAGEM = "gemma4:cloud";
 // ===============================
 
 if (!OLLAMA_API_KEY) {
-
-```
 console.log("");
 console.log("⚠️ AVISO:");
 console.log("OLLAMA_API_KEY não encontrada.");
 console.log("Verifica o teu ficheiro .env");
 console.log("");
-```
-
 }
 
 // ===============================
 // FICHEIRO DE MEMÓRIA
 // ===============================
 
-const ARQUIVO_MEMORIA = path.join(
-__dirname,
-"memoria.json"
-);
+const ARQUIVO_MEMORIA = path.join(__dirname, "memoria.json");
 
 // ===============================
 // EXPRESS
@@ -58,51 +50,26 @@ limit: "30mb"
 // 📱 ARQUIVOS DO MEU AI / PWA
 // ===============================
 
-// Servir os ficheiros do site
 app.use(express.static(__dirname));
 
 // Manifest
 app.get("/manifest.json", (req, res) => {
-
-```
-res.sendFile(
-    path.join(__dirname, "manifest.json")
-);
-```
-
+res.sendFile(path.join(__dirname, "manifest.json"));
 });
 
 // Service Worker
 app.get("/sw.js", (req, res) => {
-
-```
-res.sendFile(
-    path.join(__dirname, "sw.js")
-);
-```
-
+res.sendFile(path.join(__dirname, "sw.js"));
 });
 
 // Ícone 192x192
 app.get("/icon-192.png", (req, res) => {
-
-```
-res.sendFile(
-    path.join(__dirname, "icon-192.png")
-);
-```
-
+res.sendFile(path.join(__dirname, "icon-192.png"));
 });
 
 // Ícone 512x512
 app.get("/icon-512.png", (req, res) => {
-
-```
-res.sendFile(
-    path.join(__dirname, "icon-512.png")
-);
-```
-
+res.sendFile(path.join(__dirname, "icon-512.png"));
 });
 
 // ===============================
@@ -110,50 +77,31 @@ res.sendFile(
 // ===============================
 
 function memoriaPadrao() {
-
-```
 return {
-
-    nome: "",
-
-    gosta_de: [],
-
-    jogo_favorito: "",
-
-    cor_favorita: "",
-
-    comida_favorita: "",
-
-    notas: []
+nome: "",
+gosta_de: [],
+jogo_favorito: "",
+cor_favorita: "",
+comida_favorita: "",
+notas: []
 };
-```
-
 }
 
 function carregarMemoria() {
+try {
+if (!fs.existsSync(ARQUIVO_MEMORIA)) {
+return memoriaPadrao();
+}
 
 ```
-try {
-
-    if (
-        !fs.existsSync(
-            ARQUIVO_MEMORIA
-        )
-    ) {
-
-        return memoriaPadrao();
-    }
-
-    const dados =
-        fs.readFileSync(
-            ARQUIVO_MEMORIA,
-            "utf8"
-        );
+    const dados = fs.readFileSync(
+        ARQUIVO_MEMORIA,
+        "utf8"
+    );
 
     return JSON.parse(dados);
 
 } catch (erro) {
-
     console.log(
         "Erro ao carregar memória:",
         erro.message
@@ -166,25 +114,15 @@ try {
 }
 
 function guardarMemoria(memoria) {
+try {
+fs.writeFileSync(
+ARQUIVO_MEMORIA,
+JSON.stringify(memoria, null, 2),
+"utf8"
+);
 
 ```
-try {
-
-    fs.writeFileSync(
-
-        ARQUIVO_MEMORIA,
-
-        JSON.stringify(
-            memoria,
-            null,
-            2
-        ),
-
-        "utf8"
-    );
-
 } catch (erro) {
-
     console.log(
         "Erro ao guardar memória:",
         erro.message
@@ -194,160 +132,96 @@ try {
 
 }
 
-let memoria =
-carregarMemoria();
+let memoria = carregarMemoria();
 
 // ===============================
 // ATUALIZAR MEMÓRIA
 // ===============================
 
 function atualizarMemoria(texto) {
-
-```
 if (!texto) return;
 
-const t =
-    texto.toLowerCase();
+```
+const t = texto.toLowerCase();
 
-const nome =
-    texto.match(
-        /(?:meu nome é|me chamo|chamo-me)\s+([a-záàâãéêíóôõúç]+)/i
-    );
+const nome = texto.match(
+    /(?:meu nome é|me chamo|chamo-me)\s+([a-záàâãéêíóôõúç]+)/i
+);
 
 if (nome) {
-
-    memoria.nome =
-        nome[1];
+    memoria.nome = nome[1];
 }
 
 if (
     t.includes("eu gosto de") ||
     t.includes("gosto de")
 ) {
+    const resultado = texto.match(
+        /gosto de\s+(.+)/i
+    );
 
-    const resultado =
-        texto.match(
-            /gosto de\s+(.+)/i
-        );
-
-    if (
-        resultado &&
-        resultado[1]
-    ) {
-
-        const coisa =
-            resultado[1]
-                .replace(
-                    /[.!?]+$/,
-                    ""
-                )
-                .trim();
+    if (resultado && resultado[1]) {
+        const coisa = resultado[1]
+            .replace(/[.!?]+$/, "")
+            .trim();
 
         if (
             coisa &&
-            !memoria.gosta_de.includes(
-                coisa
-            )
+            !memoria.gosta_de.includes(coisa)
         ) {
-
-            memoria.gosta_de.push(
-                coisa
-            );
+            memoria.gosta_de.push(coisa);
         }
     }
 }
 
-const jogo =
-    texto.match(
-        /(?:meu jogo favorito é|meu jogo preferido é)\s+(.+)/i
-    );
+const jogo = texto.match(
+    /(?:meu jogo favorito é|meu jogo preferido é)\s+(.+)/i
+);
 
-if (
-    jogo &&
-    jogo[1]
-) {
-
-    memoria.jogo_favorito =
-        jogo[1]
-            .replace(
-                /[.!?]+$/,
-                ""
-            )
-            .trim();
+if (jogo && jogo[1]) {
+    memoria.jogo_favorito = jogo[1]
+        .replace(/[.!?]+$/, "")
+        .trim();
 }
 
-const cor =
-    texto.match(
-        /(?:minha cor favorita é|minha cor preferida é)\s+(.+)/i
-    );
+const cor = texto.match(
+    /(?:minha cor favorita é|minha cor preferida é)\s+(.+)/i
+);
 
-if (
-    cor &&
-    cor[1]
-) {
-
-    memoria.cor_favorita =
-        cor[1]
-            .replace(
-                /[.!?]+$/,
-                ""
-            )
-            .trim();
+if (cor && cor[1]) {
+    memoria.cor_favorita = cor[1]
+        .replace(/[.!?]+$/, "")
+        .trim();
 }
 
-const comida =
-    texto.match(
-        /(?:minha comida favorita é|minha comida preferida é)\s+(.+)/i
-    );
+const comida = texto.match(
+    /(?:minha comida favorita é|minha comida preferida é)\s+(.+)/i
+);
 
-if (
-    comida &&
-    comida[1]
-) {
-
-    memoria.comida_favorita =
-        comida[1]
-            .replace(
-                /[.!?]+$/,
-                ""
-            )
-            .trim();
+if (comida && comida[1]) {
+    memoria.comida_favorita = comida[1]
+        .replace(/[.!?]+$/, "")
+        .trim();
 }
 
-const nota =
-    texto.match(
-        /(?:lembra que|lembre que)\s+(.+)/i
-    );
+const nota = texto.match(
+    /(?:lembra que|lembre que)\s+(.+)/i
+);
 
-if (
-    nota &&
-    nota[1]
-) {
-
-    const novaNota =
-        nota[1]
-            .replace(
-                /[.!?]+$/,
-                ""
-            )
-            .trim();
+if (nota && nota[1]) {
+    const novaNota = nota[1]
+        .replace(/[.!?]+$/, "")
+        .trim();
 
     if (
         novaNota &&
-        !memoria.notas.includes(
-            novaNota
-        )
+        !memoria.notas.includes(novaNota)
     ) {
-
-        memoria.notas.push(
-            novaNota
-        );
+        memoria.notas.push(novaNota);
     }
 }
 
-guardarMemoria(
-    memoria
-);
+guardarMemoria(memoria);
 ```
 
 }
@@ -357,14 +231,12 @@ guardarMemoria(
 // ===============================
 
 function memoriaParaTexto() {
-
-```
 const partes = [];
 
+```
 if (memoria.nome) {
-
     partes.push(
-        `Nome do utilizador: ${memoria.nome}`
+        "Nome do utilizador: " + memoria.nome
     );
 }
 
@@ -372,36 +244,30 @@ if (
     memoria.gosta_de &&
     memoria.gosta_de.length
 ) {
-
     partes.push(
-        `Gosta de: ${memoria.gosta_de.join(", ")}`
+        "Gosta de: " +
+        memoria.gosta_de.join(", ")
     );
 }
 
-if (
-    memoria.jogo_favorito
-) {
-
+if (memoria.jogo_favorito) {
     partes.push(
-        `Jogo favorito: ${memoria.jogo_favorito}`
+        "Jogo favorito: " +
+        memoria.jogo_favorito
     );
 }
 
-if (
-    memoria.cor_favorita
-) {
-
+if (memoria.cor_favorita) {
     partes.push(
-        `Cor favorita: ${memoria.cor_favorita}`
+        "Cor favorita: " +
+        memoria.cor_favorita
     );
 }
 
-if (
-    memoria.comida_favorita
-) {
-
+if (memoria.comida_favorita) {
     partes.push(
-        `Comida favorita: ${memoria.comida_favorita}`
+        "Comida favorita: " +
+        memoria.comida_favorita
     );
 }
 
@@ -409,24 +275,17 @@ if (
     memoria.notas &&
     memoria.notas.length
 ) {
-
     partes.push(
-        `Notas: ${memoria.notas
-            .slice(-5)
-            .join("; ")}`
+        "Notas: " +
+        memoria.notas.slice(-5).join("; ")
     );
 }
 
 if (!partes.length) {
-
-    return (
-        "Não há informações guardadas sobre o utilizador."
-    );
+    return "Não há informações guardadas sobre o utilizador.";
 }
 
-return partes.join(
-    "\n"
-);
+return partes.join("\n");
 ```
 
 }
@@ -435,30 +294,18 @@ return partes.join(
 // LIMITAR TEXTO
 // ===============================
 
-function limitarTexto(
-texto,
-limite = 2500
-) {
-
-```
+function limitarTexto(texto, limite = 2500) {
 if (!texto) {
-
-    return "";
+return "";
 }
 
-if (
-    texto.length <=
-    limite
-) {
-
+```
+if (texto.length <= limite) {
     return texto;
 }
 
 return (
-    texto.slice(
-        0,
-        limite
-    ) +
+    texto.slice(0, limite) +
     "\n[Conteúdo cortado.]"
 );
 ```
@@ -469,70 +316,39 @@ return (
 // HISTÓRICO
 // ===============================
 
-function prepararHistorico(
-messages
-) {
-
-```
-if (
-    !Array.isArray(messages)
-) {
-
-    return [];
+function prepararHistorico(messages) {
+if (!Array.isArray(messages)) {
+return [];
 }
 
-const ultimas =
-    messages.slice(-4);
+```
+const ultimas = messages.slice(-4);
 
-return ultimas.map(
-    function(mensagem) {
+return ultimas.map(function(mensagem) {
+    let role = "user";
 
-        let role =
-            "user";
-
-        if (
-            mensagem.role ===
-            "assistant"
-        ) {
-
-            role =
-                "assistant";
-        }
-
-        if (
-            mensagem.role ===
-            "system"
-        ) {
-
-            role =
-                "system";
-        }
-
-        let content =
-            mensagem.content;
-
-        if (
-            typeof content ===
-            "string"
-        ) {
-
-            content =
-                limitarTexto(
-                    content,
-                    1200
-                );
-        }
-
-        return {
-
-            role:
-                role,
-
-            content:
-                content
-        };
+    if (mensagem.role === "assistant") {
+        role = "assistant";
     }
-);
+
+    if (mensagem.role === "system") {
+        role = "system";
+    }
+
+    let content = mensagem.content;
+
+    if (typeof content === "string") {
+        content = limitarTexto(
+            content,
+            1200
+        );
+    }
+
+    return {
+        role: role,
+        content: content
+    };
+});
 ```
 
 }
@@ -541,26 +357,19 @@ return ultimas.map(
 // LER PDF
 // ===============================
 
-async function lerPDF(
-base64
-) {
+async function lerPDF(base64) {
+try {
+const buffer = Buffer.from(
+base64,
+"base64"
+);
 
 ```
-try {
+    const parser = new PDFParse({
+        data: buffer
+    });
 
-    const buffer =
-        Buffer.from(
-            base64,
-            "base64"
-        );
-
-    const parser =
-        new PDFParse({
-            data: buffer
-        });
-
-    const resultado =
-        await parser.getText();
+    const resultado = await parser.getText();
 
     await parser.destroy();
 
@@ -570,7 +379,6 @@ try {
     );
 
 } catch (erro) {
-
     console.log(
         "Erro ao ler PDF:",
         erro.message
@@ -586,14 +394,8 @@ try {
 // SISTEMA DA IA
 // ===============================
 
-function criarSistema(
-temImagem = false
-) {
-
-```
+function criarSistema(temImagem = false) {
 let sistema = `
-```
-
 Tu és o Meu AI.
 
 REGRA PRINCIPAL:
@@ -621,7 +423,6 @@ ${memoriaParaTexto()}
 
 ```
 if (temImagem) {
-
     sistema += `
 ```
 
@@ -641,40 +442,25 @@ return sistema;
 // LIMPAR BASE64 DA IMAGEM
 // ===============================
 
-function limparBase64Imagem(
-imagem
-) {
-
-```
+function limparBase64Imagem(imagem) {
 if (!imagem) {
-
-    return "";
+return "";
 }
 
+```
 if (
     typeof imagem === "object" &&
     imagem.data
 ) {
-
-    imagem =
-        imagem.data;
+    imagem = imagem.data;
 }
 
-if (
-    typeof imagem !==
-    "string"
-) {
-
+if (typeof imagem !== "string") {
     return "";
 }
 
-if (
-    imagem.includes(",")
-) {
-
-    return imagem.split(
-        ","
-    )[1];
+if (imagem.includes(",")) {
+    return imagem.split(",")[1];
 }
 
 return imagem;
@@ -691,67 +477,49 @@ modelo,
 mensagens,
 temImagem = false
 ) {
+const controlador =
+new AbortController();
 
 ```
-const controlador =
-    new AbortController();
-
-const temporizador =
-    setTimeout(
-        () =>
-            controlador.abort(),
-        120000
-    );
+const temporizador = setTimeout(
+    () => controlador.abort(),
+    120000
+);
 
 try {
+    const resposta = await fetch(
+        `${OLLAMA_URL}/api/chat`,
+        {
+            method: "POST",
 
-    const resposta =
-        await fetch(
-            `${OLLAMA_URL}/api/chat`,
-            {
+            headers: {
+                "Content-Type":
+                    "application/json",
 
-                method: "POST",
+                "Authorization":
+                    `Bearer ${OLLAMA_API_KEY}`
+            },
 
-                headers: {
+            body: JSON.stringify({
+                model: modelo,
+                messages: mensagens,
+                stream: false,
 
-                    "Content-Type":
-                        "application/json",
+                options: {
+                    num_predict:
+                        temImagem
+                            ? 160
+                            : 80,
 
-                    "Authorization":
-                        `Bearer ${OLLAMA_API_KEY}`
-                },
+                    temperature: 0.4
+                }
+            }),
 
-                body:
-                    JSON.stringify({
-
-                        model:
-                            modelo,
-
-                        messages:
-                            mensagens,
-
-                        stream:
-                            false,
-
-                        options: {
-
-                            num_predict:
-                                temImagem
-                                    ? 160
-                                    : 80,
-
-                            temperature:
-                                0.4
-                        }
-                    }),
-
-                signal:
-                    controlador.signal
-            }
-        );
+            signal: controlador.signal
+        }
+    );
 
     if (!resposta.ok) {
-
         const erroTexto =
             await resposta.text();
 
@@ -763,10 +531,7 @@ try {
     return await resposta.json();
 
 } finally {
-
-    clearTimeout(
-        temporizador
-    );
+    clearTimeout(temporizador);
 }
 ```
 
@@ -779,76 +544,44 @@ try {
 app.post(
 "/api/chat",
 async function(req, res) {
+try {
+const {
+messages = [],
+file = null,
+image = null
+} = req.body;
 
 ```
-    try {
-
-        const {
-
-            messages = [],
-
-            file = null,
-
-            image = null
-
-        } = req.body;
-
         const ultimaMensagem =
-
-            Array.isArray(
-                messages
-            ) &&
+            Array.isArray(messages) &&
             messages.length
-
-                ? messages[
-                    messages.length - 1
-                ]
-
+                ? messages[messages.length - 1]
                 : null;
 
         const textoUsuario =
-
             ultimaMensagem &&
-
-            typeof ultimaMensagem.content ===
-            "string"
-
+            typeof ultimaMensagem.content === "string"
                 ? ultimaMensagem.content
-
                 : "";
 
         if (textoUsuario) {
-
-            atualizarMemoria(
-                textoUsuario
-            );
+            atualizarMemoria(textoUsuario);
         }
 
         const historico =
-            prepararHistorico(
-                messages
-            );
+            prepararHistorico(messages);
 
-        let conteudoFicheiro =
-            "";
+        let conteudoFicheiro = "";
 
         if (file) {
-
             if (
-                file.type ===
-                "pdf" &&
+                file.type === "pdf" &&
                 file.data
             ) {
-
                 conteudoFicheiro =
-                    await lerPDF(
-                        file.data
-                    );
+                    await lerPDF(file.data);
 
-            } else if (
-                file.content
-            ) {
-
+            } else if (file.content) {
                 conteudoFicheiro =
                     limitarTexto(
                         file.content,
@@ -860,42 +593,27 @@ async function(req, res) {
         const mensagens = [];
 
         mensagens.push({
-
-            role:
-                "system",
+            role: "system",
 
             content:
-                criarSistema(
-                    !!image
-                )
+                criarSistema(!!image)
         });
 
         for (
-            const mensagem
-            of historico
+            const mensagem of historico
         ) {
-
             if (
-                mensagem.role ===
-                "system"
+                mensagem.role === "system"
             ) {
-
                 continue;
             }
 
-            mensagens.push(
-                mensagem
-            );
+            mensagens.push(mensagem);
         }
 
-        if (
-            conteudoFicheiro
-        ) {
-
+        if (conteudoFicheiro) {
             mensagens.push({
-
-                role:
-                    "user",
+                role: "user",
 
                 content:
                     `Conteúdo do ficheiro:
@@ -908,43 +626,31 @@ Responde usando este conteúdo quando necessário.`
 }
 
 ```
-        let modelo =
-            MODELO_TEXTO;
+        let modelo = MODELO_TEXTO;
 
         if (image) {
-
-            modelo =
-                MODELO_IMAGEM;
+            modelo = MODELO_IMAGEM;
 
             const pergunta =
-
                 textoUsuario ||
-
                 "Analisa esta imagem.";
 
             const base64 =
-                limparBase64Imagem(
-                    image
-                );
+                limparBase64Imagem(image);
 
             if (!base64) {
-
                 return res
                     .status(400)
                     .json({
-
                         reply:
                             "Não consegui ler a imagem."
                     });
             }
 
             mensagens.push({
+                role: "user",
 
-                role:
-                    "user",
-
-                content:
-                    pergunta,
+                content: pergunta,
 
                 images: [
                     base64
@@ -966,40 +672,27 @@ Responde usando este conteúdo quando necessário.`
             "☁️ A enviar para Ollama Cloud..."
         );
 
-        const inicio =
-            Date.now();
+        const inicio = Date.now();
 
         const dados =
             await falarComOllama(
-
                 modelo,
-
                 mensagens,
-
                 !!image
             );
 
         const tempo =
-
-            (
-                Date.now() -
-                inicio
-            ) / 1000;
+            (Date.now() - inicio) / 1000;
 
         console.log(
             `⚡ Resposta em ${tempo.toFixed(1)}s`
         );
 
         const respostaFinal =
-
             dados &&
-
             dados.message &&
-
             dados.message.content
-
                 ? dados.message.content
-
                 : "Não consegui gerar uma resposta.";
 
         console.log(
@@ -1011,13 +704,10 @@ Responde usando este conteúdo quando necessário.`
         );
 
         res.json({
-
-            reply:
-                respostaFinal
+            reply: respostaFinal
         });
 
     } catch (erro) {
-
         console.log("");
 
         console.log(
@@ -1039,33 +729,22 @@ Responde usando este conteúdo quando necessário.`
         let mensagemErro =
             "Não consegui contactar o Ollama Cloud.";
 
-        if (
-            erro.name ===
-            "AbortError"
-        ) {
-
+        if (erro.name === "AbortError") {
             mensagemErro =
                 "O Ollama Cloud demorou demasiado tempo a responder.";
         }
 
         if (
             erro.message &&
-            erro.message.includes(
-                "401"
-            )
+            erro.message.includes("401")
         ) {
-
             mensagemErro =
                 "A chave do Ollama Cloud não foi aceite. Verifica o ficheiro .env.";
         }
 
         res.status(500).json({
-
-            reply:
-                mensagemErro,
-
-            error:
-                erro.message
+            reply: mensagemErro,
+            error: erro.message
         });
     }
 }
@@ -1080,14 +759,8 @@ Responde usando este conteúdo quando necessário.`
 app.get(
 "/memoria",
 function(req, res) {
-
-```
-    res.json(
-        memoria
-    );
+res.json(memoria);
 }
-```
-
 );
 
 // ===============================
@@ -1097,14 +770,10 @@ function(req, res) {
 app.get(
 "/teste",
 function(req, res) {
-
-```
-    res.send(
-        "Meu AI está funcionando!"
-    );
+res.send(
+"Meu AI está funcionando!"
+);
 }
-```
-
 );
 
 // ===============================
@@ -1114,20 +783,15 @@ function(req, res) {
 app.get(
 "/teste-ollama",
 async function(req, res) {
+try {
+const resposta =
+await fetch(
+`${OLLAMA_URL}/api/tags`,
+{
+method: "GET",
 
 ```
-    try {
-
-        const resposta =
-            await fetch(
-                `${OLLAMA_URL}/api/tags`,
-                {
-
-                    method:
-                        "GET",
-
                     headers: {
-
                         "Authorization":
                             `Bearer ${OLLAMA_API_KEY}`
                     }
@@ -1140,55 +804,35 @@ async function(req, res) {
         let dados;
 
         try {
-
-            dados =
-                JSON.parse(
-                    texto
-                );
-
+            dados = JSON.parse(texto);
         } catch {
-
             dados = {
-                resposta:
-                    texto
+                resposta: texto
             };
         }
 
-        if (
-            !resposta.ok
-        ) {
-
+        if (!resposta.ok) {
             return res
-                .status(
-                    resposta.status
-                )
+                .status(resposta.status)
                 .json({
-
-                    ollama:
-                        "erro",
-
+                    ollama: "erro",
                     status:
                         resposta.status,
-
                     detalhes:
                         dados
                 });
         }
 
         res.json({
-
             ollama:
                 "funcionando",
 
             modelos:
-                dados.models ||
-                []
+                dados.models || []
         });
 
     } catch (erro) {
-
         res.status(500).json({
-
             ollama:
                 "não respondeu",
 
@@ -1205,44 +849,47 @@ async function(req, res) {
 // INICIAR SERVIDOR
 // ===============================
 
-app.listen(PORT, "0.0.0.0", () => {
-
-```
+app.listen(
+PORT,
+"0.0.0.0",
+() => {
 console.log("");
 
-console.log(
-    "========================================"
-);
+```
+    console.log(
+        "========================================"
+    );
 
-console.log(
-    "🤖 MEU AI"
-);
+    console.log(
+        "🤖 MEU AI"
+    );
 
-console.log(
-    "========================================"
-);
+    console.log(
+        "========================================"
+    );
 
-console.log(
-    `🌐 Servidor: http://localhost:${PORT}`
-);
+    console.log(
+        `🌐 Servidor: http://localhost:${PORT}`
+    );
 
-console.log(
-    `☁️ Ollama Cloud: ${OLLAMA_URL}`
-);
+    console.log(
+        `☁️ Ollama Cloud: ${OLLAMA_URL}`
+    );
 
-console.log(
-    `🧠 Modelo: ${MODELO_TEXTO}`
-);
+    console.log(
+        `🧠 Modelo: ${MODELO_TEXTO}`
+    );
 
-console.log(
-    "🚀 MODO CLOUD ATIVADO!"
-);
+    console.log(
+        "🚀 MODO CLOUD ATIVADO!"
+    );
 
-console.log(
-    "========================================"
-);
+    console.log(
+        "========================================"
+    );
 
-console.log("");
+    console.log("");
+}
 ```
 
-});
+);
